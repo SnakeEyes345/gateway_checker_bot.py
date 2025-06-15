@@ -1,13 +1,13 @@
 services:
   - type: web
-    name: gateway_checker_bot
+    name: gateway-checker-bot
     env: python
     plan: free
     region: oregon
-    buildCommand: pip install -r requirements.txt
-    startCommand: python src/gateway_checker_bot.py
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python gateway_checker_bot.py"
     envVars:
       - key: TOKEN
-        value: your-telegram-bot-token  # Replace with your actual Telegram bot token
-      - key: 7982376961:AAFf-SRqyFyTEZFw7zi-5PdqRyyrdMgRK40
-        value: -1002443574063  # Replace with your actual channel ID
+        sync: false
+      - key: CHANNEL_ID
+        sync: false
