@@ -1,20 +1,16 @@
-# gateway_checker_bot.py
-# Compatible with python-telegram-bot==13.15 and Render (via Flask)
-
 import logging
 import requests
 import socket
+import os
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from flask import Flask
 from threading import Thread
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
-# Bot Token
-TOKEN = '7982376961:AAFf-SRqyFyTEZFw7zi-5PdqRyyrdMgRK40'
-
-# Channel ID
-CHANNEL_ID = -1002443574063
+# Load from env
+TOKEN = os.getenv('TOKEN')
+CHANNEL_ID = int(os.getenv('CHANNEL_ID'))
 
 # Logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -43,7 +39,6 @@ def scan_url(update, context, url):
     try:
         r = requests.get(url, timeout=10)
         html = r.text.lower()
-        soup = BeautifulSoup(r.text, 'html.parser')
 
         gateways = [g.capitalize() for g in GATEWAYS if g in html]
         captcha = 'Yes' if 'captcha' in html else 'No'
@@ -99,7 +94,6 @@ def fake(update, context):
     if not context.args:
         update.message.reply_text("❌ Usage: /fake <country_code>\nExample: /fake US")
         return
-
     code = context.args[0].upper()
     try:
         r = requests.get(f"https://randomuser.me/api/?nat={code}", timeout=10)
@@ -138,7 +132,5 @@ def run_bot():
     updater.idle()
 
 if __name__ == '__main__':
-    # Start bot in background thread
     Thread(target=run_bot).start()
-    # Start Flask app
     app.run(host='0.0.0.0', port=8080)
