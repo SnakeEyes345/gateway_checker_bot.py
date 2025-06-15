@@ -2,12 +2,11 @@ services:
   - type: web
     name: gateway-checker-bot
     env: python
-    plan: free
-    region: oregon
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "python gateway_checker_bot.py"
+    buildCommand: ""
+    startCommand: python gateway_checker_bot.py
     envVars:
       - key: TOKEN
-        sync: false
+        value: 7982376961:AAFf-SRqyFyTEZFw7zi-5PdqRyyrdMgRK40
       - key: CHANNEL_ID
-        sync: false
+        value: -1002443574063
+    autoDeploy: true
