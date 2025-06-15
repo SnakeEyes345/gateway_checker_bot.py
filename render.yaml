@@ -2,11 +2,6 @@ services:
   - type: web
     name: gateway-checker-bot
     env: python
-    buildCommand: ""
-    startCommand: python gateway_checker_boy.py
-    envVars:
-      - key: TOKEN
-        value: 7982376961:AAFf-SRqyFyTEZFw7zi-5PdqRyyrdMgRK40
-      - key: CHANNEL_ID
-        value: -1002443574063
-    autoDeploy: true
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python src/gateway_checker_bot.py"
+    pythonVersion: 3.10.12
