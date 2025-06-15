@@ -1,1 +1,1 @@
-web: python gateway_checker_bot.py
+web: python gateway_checker_boy.py
