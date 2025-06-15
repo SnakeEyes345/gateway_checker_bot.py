@@ -1,22 +1,31 @@
 # gateway_checker_bot.py
-# Compatible with python-telegram-bot==13.15
+# Compatible with python-telegram-bot==13.15 and Render (via Flask)
 
 import logging
 import requests
 import socket
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
+from flask import Flask
+from threading import Thread
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 # Bot Token
-TOKEN = '7982376961:AAFf-SRqyFyTEZFw7zi-5PdqRyyrdMgRK40'  # <-- Use your actual token
+TOKEN = '7982376961:AAFf-SRqyFyTEZFw7zi-5PdqRyyrdMgRK40'
 
-# Your Channel Numeric ID (not @username)
-CHANNEL_ID = -1002443574063  # <-- Replace with your actual channel ID
+# Channel ID
+CHANNEL_ID = -1002443574063
 
 # Logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Flask app to keep the service alive
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return 'Telegram Gateway Checker Bot is Running!'
 
 # Keywords
 GATEWAYS = ['stripe', 'paypal', 'eway', 'nab', 'omise']
@@ -62,12 +71,8 @@ def scan_url(update, context, url):
 🧑‍💻 Checked by: @{update.effective_user.username or 'Anonymous'}
 🤖 Bot By: @{context.bot.username}
 """
-        # Reply to user
         update.message.reply_text(msg)
-
-        # Auto post to channel
         context.bot.send_message(chat_id=CHANNEL_ID, text=msg)
-
     except Exception as e:
         logger.error(e)
         update.message.reply_text("❌ Failed to fetch URL.")
@@ -115,15 +120,12 @@ def fake(update, context):
 🤖 Bot By: @{context.bot.username}
 """
         update.message.reply_text(msg)
-
-        # Send to Channel as well
         context.bot.send_message(chat_id=CHANNEL_ID, text=msg)
-
     except Exception as e:
         logger.error(e)
         update.message.reply_text("❌ Failed to fetch profile.")
 
-def main():
+def run_bot():
     updater = Updater(TOKEN, use_context=True)
     dp = updater.dispatcher
 
@@ -136,4 +138,7 @@ def main():
     updater.idle()
 
 if __name__ == '__main__':
-    main()
+    # Start bot in background thread
+    Thread(target=run_bot).start()
+    # Start Flask app
+    app.run(host='0.0.0.0', port=8080)
