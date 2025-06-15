@@ -5,7 +5,7 @@ services:
     plan: free
     region: oregon
     buildCommand: pip install -r requirements.txt
-    startCommand: bash start.sh
+    startCommand: python src/gateway_checker_bot.py
     envVars:
       - key: TOKEN
         value: your-telegram-bot-token  # Replace with your actual Telegram bot token
