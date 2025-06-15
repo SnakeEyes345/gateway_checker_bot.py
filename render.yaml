@@ -3,5 +3,5 @@ services:
     name: gateway-checker-bot
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "python src/gateway_checker_bot.py"
+    startCommand: "python src/gateway_checker_boy.py"
     pythonVersion: 3.10.12
