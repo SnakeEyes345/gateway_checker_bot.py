@@ -8,22 +8,19 @@ from flask import Flask
 from threading import Thread
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
-# Load from env
+# Load from environment
 TOKEN = os.getenv('TOKEN')
 CHANNEL_ID = int(os.getenv('CHANNEL_ID'))
 
-# Logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Flask app to keep the service alive
 app = Flask(__name__)
 
 @app.route('/')
 def index():
     return 'Telegram Gateway Checker Bot is Running!'
 
-# Keywords
 GATEWAYS = ['stripe', 'paypal', 'eway', 'nab', 'omise']
 DONATE_KEYWORDS = ['donate', 'donation', 'contribute', 'give']
 MEMBERSHIP_KEYWORDS = ['membership', 'member', 'join', 'subscribe', 'account']
@@ -39,14 +36,12 @@ def scan_url(update, context, url):
     try:
         r = requests.get(url, timeout=10)
         html = r.text.lower()
-
         gateways = [g.capitalize() for g in GATEWAYS if g in html]
         captcha = 'Yes' if 'captcha' in html else 'No'
         cloudflare = 'Yes' if 'cloudflare' in r.headers.get('Server', '').lower() else 'No'
         graphql = 'Yes' if '/graphql' in r.text else 'No'
         donate = any(k in html for k in DONATE_KEYWORDS)
         membership = any(k in html for k in MEMBERSHIP_KEYWORDS)
-
         hostname = urlparse(url).hostname
         ip = socket.gethostbyname(hostname)
         country = get_country_from_ip(ip)
@@ -98,7 +93,6 @@ def fake(update, context):
     try:
         r = requests.get(f"https://randomuser.me/api/?nat={code}", timeout=10)
         data = r.json()["results"][0]
-
         msg = f"""📍 Fake Profile Generator ({code})
 ━━━━━━━━━━━━━━━━━━━━━━━
 👤 Name: {data['name']['title']} {data['name']['first']} {data['name']['last']}
@@ -122,12 +116,10 @@ def fake(update, context):
 def run_bot():
     updater = Updater(TOKEN, use_context=True)
     dp = updater.dispatcher
-
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("scanurl", scanurl))
     dp.add_handler(CommandHandler("fake", fake))
     dp.add_handler(MessageHandler(Filters.text & ~Filters.command, check_url))
-
     updater.start_polling()
     updater.idle()
 
